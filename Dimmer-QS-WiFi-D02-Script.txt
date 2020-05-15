@@ -1,0 +1,157 @@
+;WiFi-2CH-Dimmer v1.4.1
+;QS-WiFi-D02-2C
+;MS-105B
+;by Mick96 & thxthx0
+>D
+sw1=0
+sw2=0
+x=0
+cn1=0
+cn2=0
+tm1=0
+tm2=0
+h1=0
+h2=0
+t1=0
+t2=0
+sl1=0
+sl2=0
+di=""
+pl=2
+pu=10
+dd1=0
+dd2=0
+mp=2.2
+sp=2
+ll=40
+ul=98
+scl=0
+dv1=70
+dv2=70
+tmp=0
+
+>B
+=>Power0 0
+=>Counter1 0
+=>Counter2 0
+->Baudrate 9600
+=#sd1(dv1)
+=#sd2(dv2)
+delay(1000)
+=#sd1(0)
+=#sd2(0)
+scl=(ul-ll)/100
+
+>F
+cn1=pc[1]
+cn2=pc[2]
+if chg[cn1]>0 {
+sw1=1
+} else {
+sw1=0
+}
+if chg[cn2]>0 {
+sw2=1
+} else {
+sw2=0
+}
+tm1+=1
+tm2+=1
+if sw1==0
+and tm1>pl
+and tm1<pu {
+t1^=1
+}
+if sw2==0
+and tm2>pl
+and tm2<pu {
+t2^=1
+}
+if sw1>0 {
+if h1==0 {
+dd1^=1
+h1=1
+}
+if tm1>pu {
+if t1>0 {
+if dd1>0 {
+dv1+=sp
+} else {
+dv1-=sp
+}
+}
+}
+} else {
+tm1=0
+h1=0
+}
+if sw2>0 {
+if h2==0 {
+dd2^=1
+h2=1
+}
+if tm2>pu {
+if t2>0 {
+if dd2>0 {
+dv2+=sp
+} else {
+dv2-=sp
+}
+}
+}
+} else {
+tm2=0
+h2=0
+}
+
+if dv1>ul {
+dv1=ul
+}
+if dv1<ll {
+dv1=ll
+}
+
+if chg[t1]>0 {
+=#sd1(dv1*t1)
+=>Power1 %t1%
+}
+
+if chg[dv1]>0 {
+=#sd1(dv1*t1)
+=>Channel1 %dv1%
+}
+
+if dv2>ul {
+dv2=ul
+}
+if dv2<ll {
+dv2=ll
+}
+
+if chg[dv2]>0
+or chg[t2]>0 { 
+=#sd2(dv2*t2)
+=>Power2 %t2%
+}
+
+>E
+sl1=Channel1
+if chg[sl1]>0 {
+dv1=sl1
+}
+sl2=Channel2
+if chg[sl2]>0 {
+dv2=sl2
+}
+
+t1=pwr[1]
+t2=pwr[2]
+
+#sd1(x)
+di="FF5501"+hn(x*mp)+"0000000A"
+->SerialSend5 %di%
+#sd2(x)
+di="FF550200"+hn(x*mp)+"00000A"
+->SerialSend5 %di%
+=>Channel2 %((x-ll)/scl)%
+#
