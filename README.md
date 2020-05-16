@@ -7,7 +7,6 @@ Flashing of ESP8266 (LM1) can be done through [Tuya-Convert](https://tasmota.git
 
 **REMEMBER** to flash a Tasmota build with script enabled.
 
-If for some reason the device bricks you need to solder serial interface directly on the board. 
 ## Set-Up Tasmota
 ### TEMPLATE:
 `{"NAME":"QS-WIFI-D02","GPIO":[255,148,255,149,38,43,255,255,37,42,255,255,255],"FLAG":0,"BASE":1}`
